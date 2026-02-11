@@ -78,7 +78,7 @@ export default function Home() {
   const progress = (answered / persons.length) * 100;
 
   const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
+    (e: React.SubmitEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!person || state !== "answering") return;
 
