@@ -1,0 +1,9 @@
+option batch abort
+option confirm off
+open rienbouw.nl
+lpwd
+lcd \sources\bewindspersonen
+lcd www
+cd /domains/bewindspersonen.rienbouw.nl/public_html
+synchronize remote
+exit
