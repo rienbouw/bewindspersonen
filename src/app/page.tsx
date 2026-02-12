@@ -78,13 +78,25 @@ export default function Home() {
       e.preventDefault();
       if (!person || state !== "answering") return;
 
-      if (isCorrect(input, person.name)) {
-        setState("correct");
+      const correct = isCorrect(input, person.name);
+      if (correct) {
         setScore((s) => s + 1);
       } else {
         setState("incorrect");
       }
-      setAnswered((a) => a + 1);
+      setAnswered((a) => {
+        const newAnswered = a + 1;
+        if (correct) {
+          if (newAnswered === QUIZ_LENGTH) {
+            setState("answering");
+          } else {
+            setCurrent((c) => c + 1);
+            setInput("");
+            setImgError(false);
+          }
+        }
+        return newAnswered;
+      });
     },
     [input, person, state]
   );
