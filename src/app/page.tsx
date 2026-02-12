@@ -47,6 +47,8 @@ const partyColors: Record<string, string> = {
   Partijloos: "bg-purple-500 text-white",
 };
 
+const QUIZ_LENGTH = 15;
+
 type QuizState = "answering" | "correct" | "incorrect";
 
 export default function Home() {
@@ -67,15 +69,9 @@ export default function Home() {
     }
   }, []);
 
-  useEffect(() => {
-    if (state === "answering") {
-      inputRef.current?.focus();
-    }
-  }, [state, current]);
-
   const person = order.length > 0 ? persons[order[current]] : null;
-  const isFinished = answered === persons.length;
-  const progress = (answered / persons.length) * 100;
+  const isFinished = answered === QUIZ_LENGTH && state === "answering";
+  const progress = (answered / QUIZ_LENGTH) * 100;
 
   const handleSubmit = useCallback(
     (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -94,12 +90,18 @@ export default function Home() {
   );
 
   const handleNext = useCallback(() => {
-    if (current + 1 >= persons.length) return;
+    if (current + 1 >= QUIZ_LENGTH) return;
     setCurrent((c) => c + 1);
     setInput("");
     setState("answering");
     setImgError(false);
   }, [current]);
+
+  const handleSkip = useCallback(() => {
+    if (!person || state !== "answering") return;
+    setState("incorrect");
+    setAnswered((a) => a + 1);
+  }, [person, state]);
 
   const handleRestart = useCallback(() => {
     setOrder(shuffle(persons.map((_, i) => i)));
@@ -110,6 +112,25 @@ export default function Home() {
     setAnswered(0);
     setImgError(false);
   }, []);
+
+  useEffect(() => {
+    if (state === "answering") {
+      inputRef.current?.focus();
+      return;
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        if (answered < QUIZ_LENGTH) {
+          handleNext();
+        } else {
+          setState("answering");
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [state, current, answered, handleNext]);
 
   if (!person) {
     return (
@@ -129,7 +150,7 @@ export default function Home() {
         {/* Progress bar */}
         <div className="w-full">
           <div className="flex justify-between text-xs font-medium text-white/80 mb-1.5">
-            <span>{answered} / {persons.length}</span>
+            <span>{answered} / {QUIZ_LENGTH}</span>
             <span>{score} goed</span>
           </div>
           <div className="h-2.5 w-full rounded-full bg-white/20 overflow-hidden">
@@ -143,18 +164,18 @@ export default function Home() {
         {isFinished ? (
           <div className="flex w-full flex-col items-center gap-5 rounded-2xl bg-white/95 p-8 shadow-xl backdrop-blur">
             <div className="text-5xl">
-              {score === persons.length ? "🏆" : score >= persons.length * 0.7 ? "🎉" : "📚"}
+              {score === QUIZ_LENGTH ? "🏆" : score >= QUIZ_LENGTH * 0.7 ? "🎉" : "📚"}
             </div>
             <p className="text-xl font-bold text-gray-800">
               Klaar!
             </p>
             <p className="text-5xl font-black bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent">
-              {score} / {persons.length}
+              {score} / {QUIZ_LENGTH}
             </p>
             <p className="text-gray-500">
-              {score === persons.length
+              {score === QUIZ_LENGTH
                 ? "Perfect! Je kent ze allemaal."
-                : score >= persons.length * 0.7
+                : score >= QUIZ_LENGTH * 0.7
                   ? "Goed gedaan!"
                   : "Blijf oefenen!"}
             </p>
@@ -219,13 +240,22 @@ export default function Home() {
                   autoComplete="off"
                   className="w-full rounded-xl border-2 border-indigo-200 bg-indigo-50/50 px-4 py-3 text-center text-gray-800 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 transition-all"
                 />
-                <button
-                  type="submit"
-                  disabled={!input.trim()}
-                  className="rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:from-indigo-700 hover:to-purple-700 disabled:opacity-40 disabled:hover:from-indigo-600 disabled:hover:to-purple-600 transition-all active:scale-95"
-                >
-                  Controleer
-                </button>
+                <div className="flex w-full gap-2">
+                  <button
+                    type="button"
+                    onClick={handleSkip}
+                    className="flex-1 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-gray-500 ring-1 ring-gray-200 hover:bg-gray-50 transition-all active:scale-95"
+                  >
+                    Overslaan
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!input.trim()}
+                    className="flex-[2] rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:from-indigo-700 hover:to-purple-700 disabled:opacity-40 disabled:hover:from-indigo-600 disabled:hover:to-purple-600 transition-all active:scale-95"
+                  >
+                    Controleer
+                  </button>
+                </div>
               </form>
             ) : (
               <div className="flex w-full flex-col items-center gap-3">
@@ -245,7 +275,7 @@ export default function Home() {
                     </>
                   )}
                 </div>
-                {current + 1 < persons.length ? (
+                {answered < QUIZ_LENGTH ? (
                   <button
                     onClick={handleNext}
                     className="rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-3 text-sm font-semibold text-white shadow-md hover:from-indigo-700 hover:to-purple-700 transition-all active:scale-95"
@@ -255,7 +285,7 @@ export default function Home() {
                 ) : (
                   <button
                     onClick={() => {
-                      setCurrent((c) => c + 1);
+                      setState("answering");
                     }}
                     className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-8 py-3 text-sm font-semibold text-white shadow-md hover:from-amber-600 hover:to-orange-600 transition-all active:scale-95"
                   >
