@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Een app om de namen van de bewindspersonen van kabinet Jetten mee te oefenen.
+De quiz bevat de ministers en de staatssecretarissen. 
+
 
 ## Getting Started
 
