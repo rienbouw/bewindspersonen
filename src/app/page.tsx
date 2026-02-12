@@ -79,26 +79,23 @@ export default function Home() {
       if (!person || state !== "answering") return;
 
       const correct = isCorrect(input, person.name);
+      const newAnswered = answered + 1;
+      setAnswered(newAnswered);
+
       if (correct) {
         setScore((s) => s + 1);
+        if (newAnswered === QUIZ_LENGTH) {
+          setState("answering");
+        } else {
+          setCurrent((c) => c + 1);
+          setInput("");
+          setImgError(false);
+        }
       } else {
         setState("incorrect");
       }
-      setAnswered((a) => {
-        const newAnswered = a + 1;
-        if (correct) {
-          if (newAnswered === QUIZ_LENGTH) {
-            setState("answering");
-          } else {
-            setCurrent((c) => c + 1);
-            setInput("");
-            setImgError(false);
-          }
-        }
-        return newAnswered;
-      });
     },
-    [input, person, state]
+    [input, person, state, answered]
   );
 
   const handleNext = useCallback(() => {
@@ -126,6 +123,14 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (isFinished) {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Enter") handleRestart();
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }
+
     if (state === "answering") {
       inputRef.current?.focus();
       return;
@@ -142,7 +147,7 @@ export default function Home() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [state, current, answered, handleNext]);
+  }, [state, current, answered, isFinished, handleNext, handleRestart]);
 
   if (!person) {
     return (
