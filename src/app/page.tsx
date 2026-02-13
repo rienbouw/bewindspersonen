@@ -21,22 +21,35 @@ function normalize(s: string): string {
     .trim();
 }
 
+function stripSpaces(s: string): string {
+  return s.replace(/\s+/g, "");
+}
+
 function isCorrect(input: string, name: string): boolean {
   const normalizedInput = normalize(input);
   if (!normalizedInput) return false;
 
-  // Full name match
-  if (normalizedInput === normalize(name)) return true;
+  const spacelessInput = stripSpaces(normalizedInput);
+
+  // Full name match (with and without spaces)
+  const normalizedName = normalize(name);
+  if (normalizedInput === normalizedName) return true;
+  if (spacelessInput === stripSpaces(normalizedName)) return true;
 
   // Last name match (last word, or everything after first space)
   const parts = name.split(" ");
   const lastName = parts[parts.length - 1];
-  if (normalizedInput === normalize(lastName)) return true;
+  const normalizedLast = normalize(lastName);
+  if (normalizedInput === normalizedLast) return true;
+  if (spacelessInput === stripSpaces(normalizedLast)) return true;
 
   // Match on surname parts (e.g. "van den Brink" -> accept "Brink" or "van den Brink")
-  // Find the first uppercase-starting word after the first name as start of surname
   const surnameParts = parts.slice(1);
-  if (surnameParts.length > 0 && normalizedInput === normalize(surnameParts.join(" "))) return true;
+  if (surnameParts.length > 0) {
+    const normalizedSurname = normalize(surnameParts.join(" "));
+    if (normalizedInput === normalizedSurname) return true;
+    if (spacelessInput === stripSpaces(normalizedSurname)) return true;
+  }
 
   return false;
 }
