@@ -13,13 +13,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bewindspersonen Quiz",
-  description: "Ken jij alle bewindspersonen van het kabinet-Jetten?",
+  title: "Kabinet Quiz",
+  description: "Ken jij alle bewindspersonen van het kabinet Jetten 1?",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "BW Quiz",
+    title: "Kabinet Quiz",
   },
   other: {
     "mobile-web-app-capable": "yes",

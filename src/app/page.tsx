@@ -162,7 +162,7 @@ export default function Home() {
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 font-sans">
       <main className="flex w-full max-w-md flex-col items-center gap-5 px-6 py-10">
         <h1 className="text-2xl font-bold tracking-tight text-white drop-shadow-md">
-          Bewindspersonen Quiz
+          Kabinet Jetten 1 Quiz
         </h1>
 
         {/* Progress bar */}

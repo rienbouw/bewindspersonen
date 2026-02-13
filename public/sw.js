@@ -1,4 +1,4 @@
-const CACHE_NAME = "bw-quiz-v2";
+const CACHE_NAME = "bw-quiz-v3";
 
 const PRECACHE_URLS = [
   "/",

@@ -1,6 +1,6 @@
 {
-  "name": "Bewindspersonen Quiz",
-  "short_name": "BW Quiz",
+  "name": "Kabinet Quiz",
+  "short_name": "Kabinet",
   "description": "Ken jij alle bewindspersonen van het kabinet-Jetten?",
   "start_url": "/",
   "display": "standalone",
