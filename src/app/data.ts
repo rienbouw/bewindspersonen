@@ -18,7 +18,7 @@ export const persons: Person[] = [
   // D66 - Staatssecretarissen
   { id: "claudia-van-bruggen", name: "Claudia van Bruggen", role: "Staatssecretaris van Justitie en Veiligheid", party: "D66" },
   { id: "willemijn-aerdts", name: "Willemijn Aerdts", role: "Staatssecretaris van Economische Zaken", party: "D66" },
-  { id: "nathalie-van-berkel", name: "Nathalie van Berkel", role: "Staatssecretaris van Financiën", party: "D66" },
+  { id: "eelco-eerenberg", name: "Eelco Eerenberg", role: "Staatssecretaris van Financiën", party: "D66" },
 
   // VVD - Ministers
   { id: "dilan-yesilgoz", name: "Dilan Yesilgöz", role: "Vicepremier, minister van Defensie", party: "VVD" },
