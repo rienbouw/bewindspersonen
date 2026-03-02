@@ -19,8 +19,8 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
   const REPEAT_CYCLES = 3;
   const MIDDLE_CYCLE = 1;
 
-  // centerPos: absolute row index in the repeated strip (middle cycle by default)
-  const [centerPos, setCenterPos] = useState(Math.max(0, N * MIDDLE_CYCLE));
+  // centerIdx: actual item index in items[] (0..N-1)
+  const [centerIdx, setCenterIdx] = useState(0);
   // dragOffset: how many px the strip is shifted during a drag (positive = drag down)
   const [dragOffset, setDragOffset] = useState(0);
   // animated: whether the snap CSS transition is active
@@ -32,33 +32,22 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
   const lastYRef = useRef(0);
   const lastTimeRef = useRef(0);
 
-  const normalizeToMiddleCycle = useCallback(
-    (pos: number) => {
-      if (N <= 0) return 0;
-      const actual = ((pos % N) + N) % N;
-      return N * MIDDLE_CYCLE + actual;
-    },
-    [N]
-  );
-
-  // Keep parent index in sync whenever centerPos or N changes
+  // Keep parent index in sync whenever centerIdx or N changes
   useEffect(() => {
-    if (N > 0) onIndexChange(((centerPos % N) + N) % N);
-  }, [centerPos, N, onIndexChange]);
+    if (N > 0) onIndexChange(((centerIdx % N) + N) % N);
+  }, [centerIdx, N, onIndexChange]);
 
-  // When item count changes (matched row removed), keep same actual index if possible.
+  // When item count changes (matched row removed), keep index in range.
   const prevNRef = useRef(N);
   useEffect(() => {
     const prevN = prevNRef.current;
     if (N > 0 && prevN > 0 && N !== prevN) {
-      const prevActual = ((centerPos % prevN) + prevN) % prevN;
-      const nextActual = Math.min(prevActual, N - 1);
-      setCenterPos(N * MIDDLE_CYCLE + nextActual);
+      setCenterIdx((prev) => Math.min(prev, N - 1));
     } else if (N > 0 && prevN === 0) {
-      setCenterPos(N * MIDDLE_CYCLE);
+      setCenterIdx(0);
     }
     prevNRef.current = N;
-  }, [N, centerPos]);
+  }, [N]);
 
   // Render all items in one reel strip (repeated cycles for seamless looping).
   const stripItems = useMemo(() => {
@@ -69,6 +58,7 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
     }));
   }, [items, N]);
 
+  const centerPos = N * MIDDLE_CYCLE + centerIdx;
   // translateY so strip row `centerPos` sits exactly at the payline.
   const baseY = CONTAINER_H / 2 - (centerPos + 0.5) * ITEM_H;
   const totalY = baseY + dragOffset;
@@ -87,11 +77,11 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
       // (new centerIdx * ITEM_H = old centerIdx * ITEM_H + snapDragOffset).
       setTimeout(() => {
         setAnimated(false);
-        setCenterPos((prev) => normalizeToMiddleCycle(prev + indexDelta));
+        setCenterIdx((prev) => ((prev + indexDelta) % N + N) % N);
         setDragOffset(0);
       }, 360);
     },
-    [N, normalizeToMiddleCycle]
+    [N]
   );
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
@@ -178,7 +168,13 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
                 }}
               >
                 {type === "photo" ? (
-                  <div style={{ width: "100%", height: "100%", padding: 4,  borderRadius: 8 }}>
+                  <div style={{
+                    width: "100%",
+                    height: "100%",
+                    padding: 4,
+                    borderRadius: 8,
+                    background: matchFlash && isCenter ? "rgba(0,255,120,0.45)" : "transparent",
+                  }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={`/persons/${item.id}.jpg`}
@@ -189,7 +185,9 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
                         objectFit: "cover", objectPosition: "top",
                         borderRadius: 8,
                         display: "block",
-                        border: "3px solid rgba(150,130,80,0.8)",
+                        border: matchFlash && isCenter
+                          ? "3px solid #00ff88"
+                          : "3px solid rgba(150,130,80,0.8)",
                       }}
                       onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                     />
@@ -200,8 +198,12 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
                       width: "100%",
                       height: "100%",
                       borderRadius: 8,
-                      border: "3px solid rgba(150,130,80,0.8)",
-                      background: isCenter ? "rgba(255,220,0,0.8)" : "rgba(255,220,0,0.6)",
+                      border: matchFlash && isCenter
+                        ? "3px solid #00ff88"
+                        : "3px solid rgba(150,130,80,0.8)",
+                      background: matchFlash && isCenter
+                        ? "rgba(0,255,120,0.55)"
+                        : isCenter ? "rgba(255,220,0,0.8)" : "rgba(255,220,0,0.6)",
                       textAlign: "center",
                       display: "flex",
                       alignItems: "center",
