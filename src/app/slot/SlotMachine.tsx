@@ -35,16 +35,16 @@ export default function SlotMachine({ children, solved, total }: Props) {
         className="relative mx-auto w-full max-w-2xl"
         style={{
           borderRadius: 28,
-          background: "linear-gradient(160deg,#9a9a9a 0%,#4a4a4a 20%,#1e1e1e 55%,#3a3a3a 100%)",
+          background: "linear-gradient(160deg,#ff4db8 0%,#8228ff 28%,#24124d 62%,#0a0620 100%)",
           padding: 5,
-          boxShadow: "0 0 0 3px #777,0 0 0 5px #333,0 40px 100px rgba(0,0,0,0.95),inset 0 1px 0 rgba(255,255,255,0.2)",
+          boxShadow: "0 0 0 3px #d17dff,0 0 0 5px #3d1a60,0 0 70px rgba(160,40,255,0.55),0 40px 100px rgba(0,0,0,0.95),inset 0 1px 0 rgba(255,255,255,0.22)",
         }}
       >
         {/* Inner cabinet */}
         <div
           style={{
             borderRadius: 24,
-            background: "linear-gradient(180deg,#252525 0%,#131313 100%)",
+            background: "linear-gradient(180deg,#22083c 0%,#120526 42%,#09021a 100%)",
             overflow: "hidden",
           }}
         >
@@ -62,8 +62,8 @@ export default function SlotMachine({ children, solved, total }: Props) {
           <div style={{ padding:"0 16px 10px" }}>
             <div className="sign-box" style={{
               borderRadius:12, padding:"8px 16px",
-              background:"linear-gradient(180deg,#180800,#0a0400)",
-              border:"2px solid #aa5500",
+              background:"linear-gradient(180deg,#2f001f,#140014)",
+              border:"2px solid #ff8a00",
               textAlign:"center",
             }}>
               <div className="neon-title" style={{
@@ -81,14 +81,14 @@ export default function SlotMachine({ children, solved, total }: Props) {
           <div style={{ padding:"0 12px 10px" }}>
             <div style={{
               borderRadius:18, padding:4,
-              background:"linear-gradient(145deg,#999 0%,#555 40%,#666 60%,#aaa 100%)",
-              boxShadow:"0 6px 20px rgba(0,0,0,0.8),inset 0 1px 0 rgba(255,255,255,0.35)",
+              background:"linear-gradient(145deg,#ffc933 0%,#ff8f00 38%,#ac40ff 68%,#6f1dff 100%)",
+              boxShadow:"0 0 25px rgba(255,170,0,0.45),0 6px 20px rgba(0,0,0,0.8),inset 0 1px 0 rgba(255,255,255,0.35)",
             }}>
               {/* Glass interior */}
               <div style={{
                 borderRadius:15,
-                background:"linear-gradient(180deg,#0a0e2a 0%,#14082e 50%,#0a0e2a 100%)",
-                boxShadow:"inset 0 6px 24px rgba(0,0,0,0.9),inset 0 0 50px rgba(60,0,100,0.4)",
+                background:"radial-gradient(circle at 50% 15%, rgba(255,120,220,0.25) 0%, rgba(44,10,100,0.6) 32%, #120336 72%, #060118 100%)",
+                boxShadow:"inset 0 6px 24px rgba(0,0,0,0.9),inset 0 0 70px rgba(170,30,255,0.5)",
                 padding:10,
               }}>
                 {/* The three reels */}

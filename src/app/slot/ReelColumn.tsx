@@ -134,11 +134,11 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
           overflow: "hidden",
           borderRadius: 12,
           border: "3px solid rgba(150,130,80,0.8)",
-          background: "#080818",
+          background: "radial-gradient(circle at 50% 14%, rgba(255,120,220,0.28) 0%, rgba(40,0,96,0.55) 35%, rgba(16,3,48,0.9) 68%, #050117 100%)",
           cursor: "grab",
           touchAction: "none",
           userSelect: "none",
-          boxShadow: "inset 0 0 30px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.6)",
+          boxShadow: "inset 0 0 35px rgba(0,0,0,0.75), inset 0 0 40px rgba(194,55,255,0.3), 0 2px 8px rgba(0,0,0,0.6)",
         }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -203,7 +203,7 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
                         : "3px solid rgba(150,130,80,0.8)",
                       background: matchFlash && isCenter
                         ? "rgba(0,255,120,0.55)"
-                        : isCenter ? "rgba(255,220,0,0.8)" : "rgba(255,220,0,0.6)",
+                        : isCenter ? "rgba(250,245,232,0.96)" : "rgba(250,245,232,0.88)",
                       textAlign: "center",
                       display: "flex",
                       alignItems: "center",
@@ -211,10 +211,10 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
                       padding: "0 6px",
                     }}>
                       <div style={{
-                        fontSize: type === "role" ? 9 : 11,
+                        fontSize: type === "role" ? 10 : 12,
                         fontWeight: 600,
-                        lineHeight: 1.35,
-                        color: isCenter ? "#1f1400" : "rgba(31,20,0,0.75)",
+                        lineHeight: 1.3,
+                        color: isCenter ? "#2a1d0a" : "rgba(42,29,10,0.78)",
                         overflow: "hidden",
                         display: "-webkit-box",
                         WebkitBoxOrient: "vertical",
@@ -246,13 +246,13 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
         {/* Top fade */}
         <div style={{
           position: "absolute", top: 0, left: 0, right: 0, height: 80,
-          background: "linear-gradient(180deg, rgba(8,8,24,0.98) 0%, rgba(8,8,24,0.5) 65%, transparent 100%)",
+          background: "linear-gradient(180deg, rgba(9,2,35,0.98) 0%, rgba(24,5,64,0.55) 65%, transparent 100%)",
           pointerEvents: "none", zIndex: 3,
         }} />
         {/* Bottom fade */}
         <div style={{
           position: "absolute", bottom: 0, left: 0, right: 0, height: 80,
-          background: "linear-gradient(0deg, rgba(8,8,24,0.98) 0%, rgba(8,8,24,0.5) 65%, transparent 100%)",
+          background: "linear-gradient(0deg, rgba(9,2,35,0.98) 0%, rgba(24,5,64,0.55) 65%, transparent 100%)",
           pointerEvents: "none", zIndex: 3,
         }} />
 

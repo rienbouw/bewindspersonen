@@ -167,7 +167,7 @@ export default function SlotPage() {
   return (
     <div style={{
       minHeight: "100vh", fontFamily: "sans-serif",
-      background: "radial-gradient(ellipse at top,#1a0a3d 0%,#050010 100%)",
+      background: "radial-gradient(ellipse at 50% -10%, #ff4db8 0%, #6f2dff 30%, #1a0750 60%, #050010 100%)",
       padding: "24px 12px",
     }}>
       <SlotMachine solved={solved} total={total}>
