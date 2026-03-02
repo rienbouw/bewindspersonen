@@ -1,8 +1,33 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useSlotGame } from "./useSlotGame";
 import SlotMachine from "./SlotMachine";
 import ReelColumn from "./ReelColumn";
+
+const MATCH_SOUND_SRC = "/sounds/casino-win.mp3";
+
+function playMatchJingle(ctx: AudioContext) {
+  const start = ctx.currentTime + 0.01;
+  const notes = [659.25, 783.99, 987.77, 1318.51];
+
+  notes.forEach((freq, i) => {
+    const t = start + i * 0.075;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = "square";
+    osc.frequency.setValueAtTime(freq, t);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.08, t + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.11);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.12);
+  });
+}
 
 export default function SlotPage() {
   const {
@@ -13,6 +38,100 @@ export default function SlotPage() {
     solved, total, finished,
     restart,
   } = useSlotGame();
+
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const matchAudioRef = useRef<HTMLAudioElement | null>(null);
+  const audioUnlockedRef = useRef(false);
+  const prevMatchFlashRef = useRef(false);
+
+  const ensureAudioContext = () => {
+    const AudioContextCtor =
+      window.AudioContext ||
+      (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextCtor) return null;
+    if (!audioCtxRef.current) {
+      audioCtxRef.current = new AudioContextCtor();
+    }
+    return audioCtxRef.current;
+  };
+
+  useEffect(() => {
+    const audio = new Audio(MATCH_SOUND_SRC);
+    audio.preload = "auto";
+    matchAudioRef.current = audio;
+
+    return () => {
+      if (!matchAudioRef.current) return;
+      matchAudioRef.current.pause();
+      matchAudioRef.current.src = "";
+      matchAudioRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const unlockAudio = () => {
+      if (audioUnlockedRef.current) return;
+      audioUnlockedRef.current = true;
+
+      const matchAudio = matchAudioRef.current;
+      if (matchAudio) {
+        matchAudio.muted = true;
+        matchAudio.volume = 0;
+        matchAudio.currentTime = 0;
+        void matchAudio.play().then(() => {
+          matchAudio.pause();
+          matchAudio.currentTime = 0;
+          matchAudio.muted = false;
+          matchAudio.volume = 1;
+        }).catch(() => {
+          matchAudio.muted = false;
+          matchAudio.volume = 1;
+        });
+      }
+
+      const ctx = ensureAudioContext();
+      if (ctx) void ctx.resume();
+    };
+
+    window.addEventListener("touchstart", unlockAudio, { passive: true });
+    window.addEventListener("pointerdown", unlockAudio, { passive: true });
+    window.addEventListener("keydown", unlockAudio);
+
+    return () => {
+      window.removeEventListener("touchstart", unlockAudio);
+      window.removeEventListener("pointerdown", unlockAudio);
+      window.removeEventListener("keydown", unlockAudio);
+    };
+  }, []);
+
+  useEffect(() => {
+    const hadMatch = prevMatchFlashRef.current;
+    prevMatchFlashRef.current = matchFlash;
+    if (!matchFlash || hadMatch) return;
+
+    const matchAudio = matchAudioRef.current;
+    if (matchAudio) {
+      matchAudio.currentTime = 0;
+      void matchAudio.play().catch(() => {
+        const ctx = ensureAudioContext();
+        if (!ctx) return;
+        void ctx.resume().then(() => playMatchJingle(ctx));
+      });
+      return;
+    }
+
+    const ctx = ensureAudioContext();
+    if (!ctx) return;
+    void ctx.resume().then(() => playMatchJingle(ctx));
+  }, [matchFlash]);
+
+  useEffect(() => {
+    return () => {
+      if (!audioCtxRef.current) return;
+      void audioCtxRef.current.close();
+      audioCtxRef.current = null;
+    };
+  }, []);
 
   if (finished) {
     return (
