@@ -115,18 +115,6 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
         }
       `}</style>
 
-      {/* Column label */}
-      <div style={{
-        textAlign: "center", fontWeight: 700,
-        letterSpacing: "0.2em", textTransform: "uppercase",
-        fontSize: 10, color: "#ffcc00",
-        textShadow: "0 0 8px #ffcc0088",
-        background: "rgba(255,200,0,0.07)",
-        border: "1px solid rgba(255,200,0,0.2)",
-        borderRadius: 6, padding: "3px 0", marginBottom: 4,
-      }}>
-        {label}
-      </div>
 
       {/* Reel window */}
       <div
