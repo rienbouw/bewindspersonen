@@ -71,11 +71,9 @@ export default function SlotMachine({ children, solved, total }: Props) {
                 fontFamily:"Impact,'Arial Black',sans-serif",
                 textTransform:"uppercase",
               }}>
-                ★ Kabinet Jetten I ★
+                ★ Kabinet Jetten ★
               </div>
-              <div style={{color:"rgba(255,150,0,0.5)",fontSize:10,letterSpacing:"0.2em",textTransform:"uppercase",marginTop:2}}>
-                swipe de wielen om functie, foto en naam te matchen
-              </div>
+             
             </div>
           </div>
 

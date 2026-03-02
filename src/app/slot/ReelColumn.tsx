@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Person } from "../data";
 
-const ITEM_H = 70;
-const CONTAINER_H = 350;
+const ITEM_H = 120;
+const CONTAINER_H = 420;
 const HALF = 5; // items shown on each side of the payline
 
 interface Props {
@@ -154,7 +154,8 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  padding: "0 8px",
+                  padding: type === "photo" ? 0 : "0 8px",
+                  overflow: "hidden",
                   background: isCenter ? "rgba(255,220,0,0.06)" : "transparent",
                   borderBottom: "1px solid rgba(255,255,255,0.05)",
                 }}
@@ -165,22 +166,26 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
                     src={`/persons/${item.id}.jpg`}
                     alt=""
                     style={{
-                      width: 42, height: 56,
+                      width: "100%",
+                      height: ITEM_H,
                       objectFit: "cover", objectPosition: "top",
-                      borderRadius: 6, display: "block",
-                      border: isCenter
-                        ? "2px solid rgba(255,220,0,0.6)"
-                        : "2px solid rgba(255,255,255,0.1)",
+                      borderRadius: 0,
+                      display: "block",
+                      border: "none",
                     }}
                     onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                   />
                 ) : (
-                  <div style={{ textAlign: "center", width: "100%" }}>
+                  <div style={{ textAlign: "center", width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <div style={{
                       fontSize: type === "role" ? 9 : 11,
                       fontWeight: 600,
                       lineHeight: 1.35,
                       color: isCenter ? "#ffffff" : "rgba(255,255,255,0.35)",
+                      overflow: "hidden",
+                      display: "-webkit-box",
+                      WebkitBoxOrient: "vertical",
+                      WebkitLineClamp: type === "role" ? 4 : 2,
                     }}>
                       {type === "role" ? item.role : item.name}
                     </div>

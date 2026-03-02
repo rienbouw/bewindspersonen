@@ -53,12 +53,19 @@ export default function SlotPage() {
     }}>
       <SlotMachine solved={solved} total={total}>
         <ReelColumn
+          key={`role-${resetKey}`}
+          type="role"
+          label="Functie"
+          items={roleItems}
+          onIndexChange={setRoleIndex}
+          matchFlash={matchFlash}
+        />
+        <ReelColumn
           key={`photo-${resetKey}`}
           type="photo"
           label="Foto"
           items={photoItems}
           onIndexChange={setPhotoIndex}
-
           matchFlash={matchFlash}
         />
         <ReelColumn
@@ -67,7 +74,6 @@ export default function SlotPage() {
           label="Naam"
           items={nameItems}
           onIndexChange={setNameIndex}
-
           matchFlash={matchFlash}
         />
       </SlotMachine>
