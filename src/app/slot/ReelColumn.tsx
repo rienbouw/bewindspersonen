@@ -203,14 +203,16 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
                       padding: "0 6px",
                     }}>
                       <div style={{
-                        fontSize: type === "role" ? 10 : 12,
+                        fontSize: type === "role" ? 10 : 11,
                         fontWeight: 600,
                         lineHeight: 1.3,
                         color: isCenter ? "#2a1d0a" : "rgba(42,29,10,0.78)",
                         overflow: "hidden",
                         display: "-webkit-box",
                         WebkitBoxOrient: "vertical",
-                        WebkitLineClamp: type === "role" ? 4 : 2,
+                        WebkitLineClamp: type === "role" ? 4 : 3,
+                        wordBreak: "break-word",
+                        hyphens: "auto",
                       }}>
                         {type === "role" ? item.role : item.name}
                       </div>
