@@ -47,13 +47,14 @@ export function useSlotGame() {
   const [matchFlash, setMatchFlash] = useState(false);
   const [finished, setFinished] = useState(false);
 
-  // Effect 1: detect a match at the payline.
-  // Does NOT touch items or timers — so no cleanup interference.
+  // Effect 1: detect a match at the payline immediately.
   useEffect(() => {
     if (matchFlash) return; // wait for the current flash to finish first
+
     const roleId = roleItems[roleIndex]?.id;
     const photoId = photoItems[photoIndex]?.id;
     const nameId = nameItems[nameIndex]?.id;
+
     if (!roleId || roleId !== photoId || photoId !== nameId) return;
     if (solvedRef.current.has(roleId)) return;
 

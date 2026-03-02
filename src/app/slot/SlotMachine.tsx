@@ -67,7 +67,7 @@ export default function SlotMachine({ children, solved, total }: Props) {
               textAlign:"center",
             }}>
               <div className="neon-title" style={{
-                fontSize:22,fontWeight:900,letterSpacing:"0.25em",
+                fontSize:22,fontWeight:900,letterSpacing:"0.2em",
                 fontFamily:"Impact,'Arial Black',sans-serif",
                 textTransform:"uppercase",
               }}>

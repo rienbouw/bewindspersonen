@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Person } from "../data";
 
 const ITEM_H = 120;
 const CONTAINER_H = 420;
+const HALF = 5;
 
 interface Props {
   type: "role" | "photo" | "name";
@@ -16,8 +17,6 @@ interface Props {
 
 export default function ReelColumn({ type, label, items, onIndexChange, matchFlash }: Props) {
   const N = items.length;
-  const REPEAT_CYCLES = 3;
-  const MIDDLE_CYCLE = 1;
 
   // centerIdx: actual item index in items[] (0..N-1)
   const [centerIdx, setCenterIdx] = useState(0);
@@ -49,18 +48,9 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
     prevNRef.current = N;
   }, [N]);
 
-  // Render all items in one reel strip (repeated cycles for seamless looping).
-  const stripItems = useMemo(() => {
-    if (N === 0) return [];
-    return Array.from({ length: N * REPEAT_CYCLES }, (_, i) => ({
-      item: items[i % N],
-      key: `${i}-${items[i % N].id}`,
-    }));
-  }, [items, N]);
-
-  const centerPos = N * MIDDLE_CYCLE + centerIdx;
-  // translateY so strip row `centerPos` sits exactly at the payline.
-  const baseY = CONTAINER_H / 2 - (centerPos + 0.5) * ITEM_H;
+  const getItem = (offset: number): Person => items[((centerIdx + offset) % N + N) % N];
+  // translateY so center item sits exactly at payline.
+  const baseY = CONTAINER_H / 2 - (HALF + 0.5) * ITEM_H;
   const totalY = baseY + dragOffset;
 
   const doSnap = useCallback(
@@ -145,18 +135,20 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
       >
-        {/* Scrolling strip — renders all items (repeated), no lazy in-spin swaps */}
+        {/* Scrolling strip */}
         <div style={{
           transform: `translateY(${totalY}px)`,
           transition: animated ? "transform 0.35s cubic-bezier(0.2,0.8,0.3,1)" : "none",
           willChange: "transform",
         }}>
-          {stripItems.map(({ item, key }, stripIdx) => {
-            const isCenter = stripIdx === centerPos;
+          {Array.from({ length: HALF * 2 + 1 }, (_, j) => {
+            const offset = j - HALF;
+            const item = getItem(offset);
+            const isCenter = offset === 0;
 
             return (
               <div
-                key={key}
+                key={j}
                 style={{
                   height: ITEM_H,
                   display: "flex",

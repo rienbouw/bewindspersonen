@@ -73,21 +73,8 @@ export default function SlotPage() {
       if (audioUnlockedRef.current) return;
       audioUnlockedRef.current = true;
 
-      const matchAudio = matchAudioRef.current;
-      if (matchAudio) {
-        matchAudio.muted = true;
-        matchAudio.volume = 0;
-        matchAudio.currentTime = 0;
-        void matchAudio.play().then(() => {
-          matchAudio.pause();
-          matchAudio.currentTime = 0;
-          matchAudio.muted = false;
-          matchAudio.volume = 1;
-        }).catch(() => {
-          matchAudio.muted = false;
-          matchAudio.volume = 1;
-        });
-      }
+      // Preload file but don't autoplay any audible sound on first touch.
+      matchAudioRef.current?.load();
 
       const ctx = ensureAudioContext();
       if (ctx) void ctx.resume();
