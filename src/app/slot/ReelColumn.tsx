@@ -1,11 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Person } from "../data";
 
 const ITEM_H = 120;
 const CONTAINER_H = 420;
-const HALF = 5; // items shown on each side of the payline
 
 interface Props {
   type: "role" | "photo" | "name";
@@ -17,9 +16,11 @@ interface Props {
 
 export default function ReelColumn({ type, label, items, onIndexChange, matchFlash }: Props) {
   const N = items.length;
+  const REPEAT_CYCLES = 3;
+  const MIDDLE_CYCLE = 1;
 
-  // centerIdx: which item is at the payline (actual index into items[])
-  const [centerIdx, setCenterIdx] = useState(0);
+  // centerPos: absolute row index in the repeated strip (middle cycle by default)
+  const [centerPos, setCenterPos] = useState(Math.max(0, N * MIDDLE_CYCLE));
   // dragOffset: how many px the strip is shifted during a drag (positive = drag down)
   const [dragOffset, setDragOffset] = useState(0);
   // animated: whether the snap CSS transition is active
@@ -31,26 +32,45 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
   const lastYRef = useRef(0);
   const lastTimeRef = useRef(0);
 
-  // Keep parent index in sync whenever centerIdx or N changes
-  useEffect(() => {
-    if (N > 0) onIndexChange(((centerIdx % N) + N) % N);
-  }, [centerIdx, N, onIndexChange]);
+  const normalizeToMiddleCycle = useCallback(
+    (pos: number) => {
+      if (N <= 0) return 0;
+      const actual = ((pos % N) + N) % N;
+      return N * MIDDLE_CYCLE + actual;
+    },
+    [N]
+  );
 
-  // When items are removed, clamp centerIdx so it stays in range
+  // Keep parent index in sync whenever centerPos or N changes
+  useEffect(() => {
+    if (N > 0) onIndexChange(((centerPos % N) + N) % N);
+  }, [centerPos, N, onIndexChange]);
+
+  // When item count changes (matched row removed), keep same actual index if possible.
   const prevNRef = useRef(N);
   useEffect(() => {
-    if (N < prevNRef.current && N > 0) {
-      setCenterIdx((prev) => Math.min(prev, N - 1));
+    const prevN = prevNRef.current;
+    if (N > 0 && prevN > 0 && N !== prevN) {
+      const prevActual = ((centerPos % prevN) + prevN) % prevN;
+      const nextActual = Math.min(prevActual, N - 1);
+      setCenterPos(N * MIDDLE_CYCLE + nextActual);
+    } else if (N > 0 && prevN === 0) {
+      setCenterPos(N * MIDDLE_CYCLE);
     }
     prevNRef.current = N;
-  }, [N]);
+  }, [N, centerPos]);
 
-  // Return the item at `offset` positions from the center (circular)
-  const getItem = (offset: number): Person =>
-    items[((centerIdx + offset) % N + N) % N];
+  // Render all items in one reel strip (repeated cycles for seamless looping).
+  const stripItems = useMemo(() => {
+    if (N === 0) return [];
+    return Array.from({ length: N * REPEAT_CYCLES }, (_, i) => ({
+      item: items[i % N],
+      key: `${i}-${items[i % N].id}`,
+    }));
+  }, [items, N]);
 
-  // translateY so the center item sits exactly at the payline
-  const baseY = CONTAINER_H / 2 - (HALF + 0.5) * ITEM_H;
+  // translateY so strip row `centerPos` sits exactly at the payline.
+  const baseY = CONTAINER_H / 2 - (centerPos + 0.5) * ITEM_H;
   const totalY = baseY + dragOffset;
 
   const doSnap = useCallback(
@@ -67,11 +87,11 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
       // (new centerIdx * ITEM_H = old centerIdx * ITEM_H + snapDragOffset).
       setTimeout(() => {
         setAnimated(false);
-        setCenterIdx((prev) => ((prev + indexDelta) % N + N) % N);
+        setCenterPos((prev) => normalizeToMiddleCycle(prev + indexDelta));
         setDragOffset(0);
       }, 360);
     },
-    [N]
+    [N, normalizeToMiddleCycle]
   );
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
@@ -135,59 +155,71 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
       >
-        {/* Scrolling strip — renders HALF*2+1 items around the center */}
+        {/* Scrolling strip — renders all items (repeated), no lazy in-spin swaps */}
         <div style={{
           transform: `translateY(${totalY}px)`,
           transition: animated ? "transform 0.35s cubic-bezier(0.2,0.8,0.3,1)" : "none",
           willChange: "transform",
         }}>
-          {Array.from({ length: HALF * 2 + 1 }, (_, j) => {
-            const offset = j - HALF; // -5 … +5
-            const item = getItem(offset);
-            const isCenter = offset === 0;
+          {stripItems.map(({ item, key }, stripIdx) => {
+            const isCenter = stripIdx === centerPos;
 
             return (
               <div
-                key={j}
+                key={key}
                 style={{
                   height: ITEM_H,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  padding: type === "photo" ? 0 : "0 8px",
+                  padding: 0,
                   overflow: "hidden",
                   background: isCenter ? "rgba(255,220,0,0.06)" : "transparent",
-                  borderBottom: "1px solid rgba(255,255,255,0.05)",
                 }}
               >
                 {type === "photo" ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={`/persons/${item.id}.jpg`}
-                    alt=""
-                    style={{
-                      width: "100%",
-                      height: ITEM_H,
-                      objectFit: "cover", objectPosition: "top",
-                      borderRadius: 0,
-                      display: "block",
-                      border: "none",
-                    }}
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                  />
+                  <div style={{ width: "100%", height: "100%", padding: 4,  borderRadius: 8 }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`/persons/${item.id}.jpg`}
+                      alt=""
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover", objectPosition: "top",
+                        borderRadius: 8,
+                        display: "block",
+                        border: "3px solid rgba(150,130,80,0.8)",
+                      }}
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                    />
+                  </div>
                 ) : (
-                  <div style={{ textAlign: "center", width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ width: "100%", height: "100%", padding: "4px 0" }}>
                     <div style={{
-                      fontSize: type === "role" ? 9 : 11,
-                      fontWeight: 600,
-                      lineHeight: 1.35,
-                      color: isCenter ? "#ffffff" : "rgba(255,255,255,0.35)",
-                      overflow: "hidden",
-                      display: "-webkit-box",
-                      WebkitBoxOrient: "vertical",
-                      WebkitLineClamp: type === "role" ? 4 : 2,
+                      width: "100%",
+                      height: "100%",
+                      borderRadius: 8,
+                      border: "3px solid rgba(150,130,80,0.8)",
+                      background: isCenter ? "rgba(255,220,0,0.8)" : "rgba(255,220,0,0.6)",
+                      textAlign: "center",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "0 6px",
                     }}>
-                      {type === "role" ? item.role : item.name}
+                      <div style={{
+                        fontSize: type === "role" ? 9 : 11,
+                        fontWeight: 600,
+                        lineHeight: 1.35,
+                        color: isCenter ? "#1f1400" : "rgba(31,20,0,0.75)",
+                        overflow: "hidden",
+                        display: "-webkit-box",
+                        WebkitBoxOrient: "vertical",
+                        WebkitLineClamp: type === "role" ? 4 : 2,
+                      }}>
+                        {type === "role" ? item.role : item.name}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -202,13 +234,11 @@ export default function ReelColumn({ type, label, items, onIndexChange, matchFla
           left: 0, right: 0,
           top: CONTAINER_H / 2 - ITEM_H / 2,
           height: ITEM_H,
-          borderTop: matchFlash ? "2px solid #00ff88" : "2px solid rgba(255,220,0,0.55)",
-          borderBottom: matchFlash ? "2px solid #00ff88" : "2px solid rgba(255,220,0,0.55)",
           background: matchFlash ? "rgba(0,255,100,0.18)" : "transparent",
           animation: matchFlash ? "payline-flash 0.2s ease-in-out 5" : "none",
           pointerEvents: "none",
           zIndex: 4,
-          transition: "border-color 0.2s, background 0.2s",
+          transition: "background 0.2s",
         }} />
 
         {/* Top fade */}
