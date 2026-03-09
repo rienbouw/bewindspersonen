@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { useSlotGame } from "./useSlotGame";
 import SlotMachine from "./SlotMachine";
@@ -127,7 +128,7 @@ export default function SlotPage() {
                 background: "radial-gradient(ellipse at center,#1a0a3d 0%,#050010 100%)",
             }}>
                 <div style={{ textAlign: "center", padding: 40 }}>
-                    <div style={{ fontSize: 80 }}>🏆</div>
+                    <div style={{ fontSize: 80 }}>??</div>
                     <div style={{
                         fontSize: 36, fontWeight: 900, letterSpacing: "0.2em", textTransform: "uppercase",
                         color: "#ffe000", textShadow: "0 0 20px #ffe000,0 0 40px #ff8800",
@@ -184,7 +185,17 @@ export default function SlotPage() {
                 />
             </SlotMachine>
 
-            <div style={{ display: "flex", justifyContent: "center", marginTop: 16 }}>
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 16, gap: 12 }}>
+                <Link href="/" style={{
+                    padding: "8px 16px", fontSize: 12, fontWeight: 700,
+                    letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none",
+                    borderRadius: 20,
+                    background: "linear-gradient(135deg,#0f3048,#0a2234)",
+                    color: "#bfefff", border: "1px solid #2a5f80",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.35)",
+                }}>
+                    Terug
+                </Link>
                 <button onClick={restart} style={{
                     padding: "8px 24px", fontSize: 12, fontWeight: 700,
                     letterSpacing: "0.15em", textTransform: "uppercase",
@@ -193,7 +204,7 @@ export default function SlotPage() {
                     color: "#888", border: "1px solid #444",
                     boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
                 }}>
-                    ↺ Nieuw spel
+                    Nieuw spel
                 </button>
             </div>
         </div>

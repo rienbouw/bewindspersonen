@@ -1,332 +1,46 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
-import { persons } from "./data";
-
-function shuffle<T>(array: T[]): T[] {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
-
-function normalize(s: string): string {
-  return s
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[''`\-]/g, "")
-    .toLowerCase()
-    .trim();
-}
-
-function stripSpaces(s: string): string {
-  return s.replace(/\s+/g, "");
-}
-
-function isCorrect(input: string, name: string): boolean {
-  const normalizedInput = normalize(input);
-  if (!normalizedInput) return false;
-
-  const spacelessInput = stripSpaces(normalizedInput);
-
-  // Full name match (with and without spaces)
-  const normalizedName = normalize(name);
-  if (normalizedInput === normalizedName) return true;
-  if (spacelessInput === stripSpaces(normalizedName)) return true;
-
-  // Last name match (last word, or everything after first space)
-  const parts = name.split(" ");
-  const lastName = parts[parts.length - 1];
-  const normalizedLast = normalize(lastName);
-  if (normalizedInput === normalizedLast) return true;
-  if (spacelessInput === stripSpaces(normalizedLast)) return true;
-
-  // Match on surname parts (e.g. "van den Brink" -> accept "Brink" or "van den Brink")
-  const surnameParts = parts.slice(1);
-  if (surnameParts.length > 0) {
-    const normalizedSurname = normalize(surnameParts.join(" "));
-    if (normalizedInput === normalizedSurname) return true;
-    if (spacelessInput === stripSpaces(normalizedSurname)) return true;
-  }
-
-  return false;
-}
-
-const partyColors: Record<string, string> = {
-  D66: "bg-emerald-500 text-white",
-  VVD: "bg-orange-500 text-white",
-  CDA: "bg-blue-600 text-white",
-  Partijloos: "bg-purple-500 text-white",
-};
-
-const QUIZ_LENGTH = 15;
-
-type QuizState = "answering" | "correct" | "incorrect";
+import Link from "next/link";
 
 export default function Home() {
-  const [order, setOrder] = useState<number[]>([]);
-  const [current, setCurrent] = useState(0);
-  const [input, setInput] = useState("");
-  const [state, setState] = useState<QuizState>("answering");
-  const [score, setScore] = useState(0);
-  const [answered, setAnswered] = useState(0);
-  const [imgError, setImgError] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    setOrder(shuffle(persons.map((_, i) => i)));
-
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js");
-    }
-  }, []);
-
-  const person = order.length > 0 ? persons[order[current]] : null;
-  const isFinished = answered === QUIZ_LENGTH && state === "answering";
-  const progress = (answered / QUIZ_LENGTH) * 100;
-
-  const handleSubmit = useCallback(
-    (e: React.SubmitEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      if (!person || state !== "answering") return;
-
-      const correct = isCorrect(input, person.name);
-      const newAnswered = answered + 1;
-      setAnswered(newAnswered);
-
-      if (correct) {
-        setScore((s) => s + 1);
-        if (newAnswered === QUIZ_LENGTH) {
-          setState("answering");
-        } else {
-          setCurrent((c) => c + 1);
-          setInput("");
-          setImgError(false);
-        }
-      } else {
-        setState("incorrect");
-      }
-    },
-    [input, person, state, answered]
-  );
-
-  const handleNext = useCallback(() => {
-    if (current + 1 >= QUIZ_LENGTH) return;
-    setCurrent((c) => c + 1);
-    setInput("");
-    setState("answering");
-    setImgError(false);
-  }, [current]);
-
-  const handleSkip = useCallback(() => {
-    if (!person || state !== "answering") return;
-    setState("incorrect");
-    setAnswered((a) => a + 1);
-  }, [person, state]);
-
-  const handleRestart = useCallback(() => {
-    setOrder(shuffle(persons.map((_, i) => i)));
-    setCurrent(0);
-    setInput("");
-    setState("answering");
-    setScore(0);
-    setAnswered(0);
-    setImgError(false);
-  }, []);
-
-  useEffect(() => {
-    if (isFinished) {
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Enter") handleRestart();
-      };
-      window.addEventListener("keydown", handleKeyDown);
-      return () => window.removeEventListener("keydown", handleKeyDown);
-    }
-
-    if (state === "answering") {
-      inputRef.current?.focus();
-      return;
-    }
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Enter") {
-        if (answered < QUIZ_LENGTH) {
-          handleNext();
-        } else {
-          setState("answering");
-        }
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [state, current, answered, isFinished, handleNext, handleRestart]);
-
-  if (!person) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
-        <p className="text-lg text-white/80">Laden...</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 font-sans">
-      <main className="flex w-full max-w-md flex-col items-center gap-5 px-6 py-10">
-        <h1 className="text-2xl font-bold tracking-tight text-white drop-shadow-md">
-          Kabinet Jetten 1 Quiz
-        </h1>
+    <div className="relative min-h-screen overflow-hidden bg-[#031525] text-slate-100">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,rgba(6,182,212,0.33),transparent_42%),radial-gradient(circle_at_80%_18%,rgba(14,165,233,0.28),transparent_38%),radial-gradient(circle_at_50%_88%,rgba(20,184,166,0.2),transparent_45%)]" />
+      <div className="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full bg-cyan-300/20 blur-3xl" />
+      <div className="pointer-events-none absolute -right-16 bottom-20 h-80 w-80 rounded-full bg-teal-300/20 blur-3xl" />
 
-        {/* Progress bar */}
-        <div className="w-full">
-          <div className="flex justify-between text-xs font-medium text-white/80 mb-1.5">
-            <span>{answered} / {QUIZ_LENGTH}</span>
-            <span>{score} goed</span>
-          </div>
-          <div className="h-2.5 w-full rounded-full bg-white/20 overflow-hidden">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-500 transition-all duration-500 ease-out"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
+      <main className="relative mx-auto flex min-h-screen w-full max-w-6xl items-center px-6 py-14 md:px-10">
+        <div className="grid w-full gap-7 md:grid-cols-[1.15fr_1fr]">
+          <section className="rounded-3xl border border-white/15 bg-white/5 p-8 backdrop-blur-xl md:p-10">
+            <p className="mb-4 inline-flex rounded-full border border-cyan-100/40 bg-cyan-300/15 px-4 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-cyan-50">
+              Kabinet Jetten 1
+            </p>
+            <h1 className="max-w-xl text-4xl font-black leading-tight tracking-tight text-white md:text-6xl">
+              Kies je spel
+            </h1>
+            <p className="mt-5 max-w-xl text-base text-slate-100/80 md:text-lg">
+              Speel de snelle naamquiz of ga all-in met de fruitmachine.
+            </p>
+          </section>
 
-        {isFinished ? (
-          <div className="flex w-full flex-col items-center gap-5 rounded-2xl bg-white/95 p-8 shadow-xl backdrop-blur">
-            <div className="text-5xl">
-              {score === QUIZ_LENGTH ? "🏆" : score >= QUIZ_LENGTH * 0.7 ? "🎉" : "📚"}
-            </div>
-            <p className="text-xl font-bold text-gray-800">
-              Klaar!
-            </p>
-            <p className="text-5xl font-black bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent">
-              {score} / {QUIZ_LENGTH}
-            </p>
-            <p className="text-gray-500">
-              {score === QUIZ_LENGTH
-                ? "Perfect! Je kent ze allemaal."
-                : score >= QUIZ_LENGTH * 0.7
-                  ? "Goed gedaan!"
-                  : "Blijf oefenen!"}
-            </p>
-            <button
-              onClick={handleRestart}
-              className="rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-3 text-sm font-semibold text-white shadow-lg hover:from-indigo-700 hover:to-purple-700 transition-all active:scale-95"
+          <section className="grid gap-4">
+            <Link
+              href="/quiz"
+              className="group rounded-3xl border border-cyan-100/45 bg-gradient-to-br from-cyan-300/20 via-sky-400/20 to-cyan-50/10 p-6 shadow-[0_20px_70px_rgba(6,182,212,0.28)] transition-all duration-300 hover:-translate-y-1 hover:border-cyan-100/70 hover:shadow-[0_26px_85px_rgba(6,182,212,0.42)]"
             >
-              Opnieuw spelen
-            </button>
-          </div>
-        ) : (
-          <div className="flex w-full flex-col items-center gap-4 rounded-2xl bg-white/95 p-5 shadow-xl backdrop-blur">
-            {/* Photo */}
-            <div className="relative h-64 w-48 overflow-hidden rounded-xl bg-gradient-to-b from-gray-100 to-gray-200 shadow-md ring-2 ring-white/50">
-              {imgError ? (
-                <div className="flex h-full w-full items-center justify-center text-gray-300">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-16 w-16"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
-                </div>
-              ) : (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={`/persons/${person.id}.jpg`}
-                  alt="Wie is dit?"
-                  className="h-full w-full object-cover"
-                  onError={() => setImgError(true)}
-                />
-              )}
-            </div>
+              <h2 className="mt-2 text-2xl font-extrabold text-white">Namen intypen</h2>
+              <p className="mt-2 text-sm text-slate-100/80">Zie de foto, typ de naam, bouw je score op.</p>
+            </Link>
 
-            {/* Role hint */}
-            <div className="flex flex-col items-center gap-1.5">
-              <p className="text-center text-sm text-gray-500">
-                {person.role}
-              </p>
-              <span className={`inline-block rounded-full px-3 py-0.5 text-xs font-bold shadow-sm ${partyColors[person.party] ?? "bg-gray-500 text-white"}`}>
-                {person.party}
-              </span>
-            </div>
-
-            {/* Answer form */}
-            {state === "answering" ? (
-              <form onSubmit={handleSubmit} className="flex w-full flex-col gap-3">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Typ de naam..."
-                  autoComplete="off"
-                  className="w-full rounded-xl border-2 border-indigo-200 bg-indigo-50/50 px-4 py-3 text-center text-gray-800 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 transition-all"
-                />
-                <div className="flex w-full gap-2">
-                  <button
-                    type="button"
-                    onClick={handleSkip}
-                    className="flex-1 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-gray-500 ring-1 ring-gray-200 hover:bg-gray-50 transition-all active:scale-95"
-                  >
-                    Overslaan
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={!input.trim()}
-                    className="flex-[2] rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:from-indigo-700 hover:to-purple-700 disabled:opacity-40 disabled:hover:from-indigo-600 disabled:hover:to-purple-600 transition-all active:scale-95"
-                  >
-                    Controleer
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <div className="flex w-full flex-col items-center gap-3">
-                <div
-                  className={`w-full rounded-xl px-4 py-3 text-center text-sm font-semibold ${
-                    state === "correct"
-                      ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
-                      : "bg-rose-50 text-rose-700 ring-1 ring-rose-200"
-                  }`}
-                >
-                  {state === "correct" ? (
-                    <>&#10003; Goed! Het is {person.name}.</>
-                  ) : (
-                    <>
-                      &#10007; Helaas! Het juiste antwoord is{" "}
-                      <span className="font-bold">{person.name}</span>.
-                    </>
-                  )}
-                </div>
-                {answered < QUIZ_LENGTH ? (
-                  <button
-                    onClick={handleNext}
-                    className="rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-3 text-sm font-semibold text-white shadow-md hover:from-indigo-700 hover:to-purple-700 transition-all active:scale-95"
-                  >
-                    Volgende
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setState("answering");
-                    }}
-                    className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-8 py-3 text-sm font-semibold text-white shadow-md hover:from-amber-600 hover:to-orange-600 transition-all active:scale-95"
-                  >
-                    Bekijk resultaat
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+            <Link
+              href="/slot"
+              className="group rounded-3xl border border-teal-100/45 bg-gradient-to-br from-teal-300/20 via-emerald-400/20 to-cyan-50/10 p-6 shadow-[0_20px_70px_rgba(16,185,129,0.25)] transition-all duration-300 hover:-translate-y-1 hover:border-teal-100/70 hover:shadow-[0_26px_85px_rgba(16,185,129,0.4)]"
+            >
+              <h2 className="mt-2 text-2xl font-extrabold text-white">Fruitmachine</h2>
+              <p className="mt-2 text-sm text-slate-100/80">Match functie, foto en naam op de payline.</p>
+            </Link>
+          </section>
+        </div>
       </main>
     </div>
   );
