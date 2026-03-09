@@ -4,40 +4,75 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#031525] text-slate-100">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,rgba(6,182,212,0.33),transparent_42%),radial-gradient(circle_at_80%_18%,rgba(14,165,233,0.28),transparent_38%),radial-gradient(circle_at_50%_88%,rgba(20,184,166,0.2),transparent_45%)]" />
-      <div className="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full bg-cyan-300/20 blur-3xl" />
-      <div className="pointer-events-none absolute -right-16 bottom-20 h-80 w-80 rounded-full bg-teal-300/20 blur-3xl" />
+    <div className="relative min-h-screen overflow-hidden bg-[#04111a] text-white">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_16%,rgba(132,255,92,0.55),transparent_38%),radial-gradient(circle_at_88%_12%,rgba(59,130,246,0.38),transparent_34%),radial-gradient(circle_at_24%_84%,rgba(250,204,21,0.34),transparent_38%),radial-gradient(circle_at_78%_82%,rgba(0,255,102,0.5),transparent_35%)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:42px_42px]" />
 
-      <main className="relative mx-auto flex min-h-screen w-full max-w-6xl items-center px-6 py-14 md:px-10">
-        <div className="grid w-full gap-7 md:grid-cols-[1.15fr_1fr]">
-          <section className="rounded-3xl border border-white/15 bg-white/5 p-8 backdrop-blur-xl md:p-10">
-            <p className="mb-4 inline-flex rounded-full border border-cyan-100/40 bg-cyan-300/15 px-4 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-cyan-50">
+      <div className="pointer-events-none absolute -left-16 top-20 h-72 w-72 rounded-full bg-lime-300/60 blur-3xl animate-pulse" />
+      <div className="pointer-events-none absolute right-0 top-10 h-96 w-96 rounded-full bg-blue-400/30 blur-3xl animate-pulse" />
+      <div className="pointer-events-none absolute bottom-0 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-green-400/60 blur-3xl animate-pulse" />
+
+      <main className="relative mx-auto flex min-h-screen w-full max-w-7xl items-center px-6 py-14 md:px-10">
+        <div className="grid w-full gap-8 lg:grid-cols-[1.15fr_1fr]">
+          <section className="rounded-[2rem] border border-green-300/80 bg-gradient-to-b from-green-400/35 to-green-500/15 p-8 shadow-[0_30px_120px_rgba(0,0,0,0.45)] backdrop-blur-2xl md:p-11">
+            <div className="mb-5 inline-flex items-center rounded-full border border-lime-300 bg-lime-300 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#06230f]">
               Kabinet Jetten 1
-            </p>
-            <h1 className="max-w-xl text-4xl font-black leading-tight tracking-tight text-white md:text-6xl">
-              Kies je spel
+            </div>
+
+            <h1 className="max-w-2xl bg-gradient-to-r from-lime-300 via-green-400 to-blue-200 bg-clip-text text-5xl font-black leading-[0.95] tracking-tight text-transparent md:text-7xl">
+              Kies je mode
             </h1>
-            <p className="mt-5 max-w-xl text-base text-slate-100/80 md:text-lg">
-              Speel de snelle naamquiz of ga all-in met de fruitmachine.
+
+            <p className="mt-6 max-w-xl text-lg text-slate-100/90 md:text-xl">
+              Van snelle herkenning tot pure arcade-chaos. Kleurrijk, snel en verslavend.
             </p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <div className="rounded-full border border-lime-300 bg-lime-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-[#06230f]">
+                15 vragen
+              </div>
+              <div className="rounded-full border border-yellow-300 bg-yellow-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-[#2a2200]">
+                2 spelmodi
+              </div>
+              <div className="rounded-full border border-blue-300 bg-blue-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-[#061d39]">
+                mobiel klaar
+              </div>
+            </div>
           </section>
 
-          <section className="grid gap-4">
+          <section className="grid gap-5">
             <Link
               href="/quiz"
-              className="group rounded-3xl border border-cyan-100/45 bg-gradient-to-br from-cyan-300/20 via-sky-400/20 to-cyan-50/10 p-6 shadow-[0_20px_70px_rgba(6,182,212,0.28)] transition-all duration-300 hover:-translate-y-1 hover:border-cyan-100/70 hover:shadow-[0_26px_85px_rgba(6,182,212,0.42)]"
+              className="group relative overflow-hidden rounded-[1.6rem] border border-blue-200 bg-gradient-to-br from-blue-500/45 via-cyan-400/30 to-green-400/30 p-7 shadow-[0_24px_90px_rgba(59,130,246,0.45)] transition-all duration-300 hover:-translate-y-1.5 hover:scale-[1.01]"
             >
-              <h2 className="mt-2 text-2xl font-extrabold text-white">Namen intypen</h2>
-              <p className="mt-2 text-sm text-slate-100/80">Zie de foto, typ de naam, bouw je score op.</p>
+              <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-blue-300/40 blur-2xl" />
+              <div className="relative">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-50/95">Mode 01</p>
+                <h2 className="mt-3 text-3xl font-extrabold">Namen intypen</h2>
+                <p className="mt-3 max-w-sm text-sm text-slate-100/95">
+                  Bekijk foto + rol en typ razendsnel de juiste naam.
+                </p>
+                <span className="mt-6 inline-flex items-center rounded-full border border-lime-300 bg-lime-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#06230f]">
+                  Start quiz
+                </span>
+              </div>
             </Link>
 
             <Link
               href="/slot"
-              className="group rounded-3xl border border-teal-100/45 bg-gradient-to-br from-teal-300/20 via-emerald-400/20 to-cyan-50/10 p-6 shadow-[0_20px_70px_rgba(16,185,129,0.25)] transition-all duration-300 hover:-translate-y-1 hover:border-teal-100/70 hover:shadow-[0_26px_85px_rgba(16,185,129,0.4)]"
+              className="group relative overflow-hidden rounded-[1.6rem] border border-lime-300 bg-gradient-to-br from-lime-300/35 via-green-400/45 to-yellow-300/28 p-7 shadow-[0_24px_90px_rgba(34,197,94,0.48)] transition-all duration-300 hover:-translate-y-1.5 hover:scale-[1.01]"
             >
-              <h2 className="mt-2 text-2xl font-extrabold text-white">Fruitmachine</h2>
-              <p className="mt-2 text-sm text-slate-100/80">Match functie, foto en naam op de payline.</p>
+              <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-lime-300/45 blur-2xl" />
+              <div className="relative">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-lime-100">Mode 02</p>
+                <h2 className="mt-3 text-3xl font-extrabold">Fruitmachine</h2>
+                <p className="mt-3 max-w-sm text-sm text-slate-100/95">
+                  Match functie, foto en naam op de lijn voor jackpot-vibes.
+                </p>
+                <span className="mt-6 inline-flex items-center rounded-full border border-green-400 bg-green-400 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#03220d]">
+                  Start machine
+                </span>
+              </div>
             </Link>
           </section>
         </div>
