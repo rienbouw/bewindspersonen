@@ -12,11 +12,11 @@ export default function Home() {
             <div className="pointer-events-none absolute right-0 top-10 h-96 w-96 rounded-full bg-blue-400/30 blur-3xl animate-pulse" />
             <div className="pointer-events-none absolute bottom-0 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-green-400/60 blur-3xl animate-pulse" />
 
-            <main className="relative mx-auto flex min-h-screen w-full max-w-7xl items-center px-6 py-14 md:px-10">
-                <div className="grid w-full gap-8 lg:grid-cols-[1.15fr_1fr]">
+            <main className="relative mx-auto flex min-h-screen w-full max-w-7xl items-top px-2 py-14 md:px-10">
+                <div className="grid w-full gap-3 lg:grid-cols-[1.15fr_1fr]">
                     <section className="justify-center rounded-[2rem] border border-green-300/80 bg-gradient-to-b from-green-400/35 to-green-500/15 p-8 shadow-[0_30px_120px_rgba(0,0,0,0.45)] backdrop-blur-2xl md:p-11">
                         <div className="flex  neon-title" style={{
-                            fontSize: 22, fontWeight: 900, letterSpacing: "0.2em",
+                            fontSize: 20, fontWeight: 900, letterSpacing: "0.2em",
                             fontFamily: "Impact,'Arial Black',sans-serif",
                             textTransform: "uppercase",
                         }}>
@@ -29,13 +29,13 @@ export default function Home() {
                             Leer spelenderwijs alle bewindspersonen van het kabinet Jetten 1 kennen! 
 
                         </p>
-                        <h1 className="max-w-2xl bg-gradient-to-r from-lime-300 via-green-400 to-blue-200 bg-clip-text text-5xl font-black leading-[0.95] tracking-tight text-transparent md:text-7xl">
+                        <h1 className="max-w-2xl bg-gradient-to-r from-lime-300 via-green-400 to-blue-200 bg-clip-text text-5xl font-black leading-[0.95] tracking-tight text-transparent md:text-6xl mb-0">
                             Kies je spel
                         </h1>
 
                     </section>
 
-                    <section className="grid gap-5">
+                    <section className="grid gap-2">
                         <Link
                             href="/quiz"
                             className="group relative overflow-hidden rounded-[1.6rem] border border-blue-200 bg-gradient-to-br from-blue-500/45 via-cyan-400/30 to-green-400/30 p-7 shadow-[0_24px_90px_rgba(59,130,246,0.45)] transition-all duration-300 hover:-translate-y-1.5 hover:scale-[1.01]"
