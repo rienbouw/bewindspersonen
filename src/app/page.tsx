@@ -26,7 +26,7 @@ export default function Home() {
 
 
                         <p className="mt-6 mb-6 max-w-xl text-lg text-slate-100/90 md:text-xl">
-                            Leer spelenderwijs alle bewindspersonen van het kabinet Jetten 1 kennen! 
+                            Leer spelenderwijs alle bewindspersonen van het kabinet Jetten 1 kennen!
 
                         </p>
                         <h1 className="max-w-2xl bg-gradient-to-r from-lime-300 via-green-400 to-blue-200 bg-clip-text text-5xl font-black leading-[0.95] tracking-tight text-transparent md:text-6xl mb-0">
